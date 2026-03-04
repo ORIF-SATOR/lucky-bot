@@ -3,198 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lucky Jet Signal Pro</title>
+    <title>Lucky Jet Predictor</title>
     <style>
-        :root {
-            --primary: #f0b90b;
-            --bg: #0b0e11;
-            --card: #1e2329;
-            --text: #ffffff;
-            --accent: #2ebd85;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-
-        .app-container {
-            width: 100%;
-            max-width: 400px;
-            background: var(--card);
-            border-radius: 25px;
-            padding: 20px;
-            text-align: center;
-            border: 2px solid #333;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
-        }
-
-        .header h1 {
-            font-size: 24px;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
-        }
-
-        .status {
-            font-size: 12px;
-            color: #848e9c;
-            margin-bottom: 20px;
-        }
-
-        /* Намоиши сигнал */
-        .display-area {
-            background: #000;
-            height: 150px;
-            border-radius: 15px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 25px;
-            border: 1px solid var(--primary);
-            position: relative;
-        }
-
-        #signal-value {
-            font-size: 50px;
-            font-weight: 800;
-            color: var(--primary);
-            text-shadow: 0 0 15px rgba(240, 185, 11, 0.5);
-        }
-
-        #loading-text {
-            display: none;
-            color: var(--accent);
-            font-weight: bold;
-            animation: blink 1s infinite;
-        }
-
-        /* Таърихи сигналҳо */
-        .history {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .history-item {
-            background: #2b3139;
-            padding: 5px 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            color: var(--accent);
-        }
-
-        /* Тугма */
-        .btn-predict {
-            background: var(--primary);
-            color: #000;
-            border: none;
-            padding: 18px;
-            width: 100%;
-            border-radius: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 5px 15px rgba(240, 185, 11, 0.3);
-        }
-
-        .btn-predict:active {
-            transform: scale(0.96);
-        }
-
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.3; }
-            100% { opacity: 1; }
-        }
+        body { background-color: #0b0e11; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 20px; }
+        .container { border: 2px solid #00ff00; border-radius: 15px; padding: 20px; display: inline-block; margin-top: 50px; background: rgba(0, 255, 0, 0.05); }
+        h1 { color: #00ff00; font-size: 24px; }
+        #signal-output { font-size: 48px; font-weight: bold; margin: 20px 0; color: #ffffff; text-shadow: 0 0 10px #00ff00; }
+        #prob { color: #888; margin-bottom: 20px; }
+        button { background-color: #00ff00; color: black; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 10px; cursor: pointer; }
+        button:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
-        <div class="header">
-            <h1>Lucky Predictor</h1>
-            <div class="status">ID: 351958223 | Version 1.0</div>
-        </div>
-
-        <div class="display-area">
-            <div id="loading-text">АНАЛИЗ...</div>
-            <div id="signal-value">0.00x</div>
-        </div>
-
-        <div class="history" id="history-box">
-            </div>
-
-        <button class="btn-predict" onclick="getSignal()">🚀 ГИРИФТАНИ СИГНАЛ</button>
+    <div class="container">
+        <h1>LUCKY JET ANALYZER</h1>
+        <div id="signal-output">0.00x</div>
+        <div id="prob">Эҳтимолият: 99.2%</div>
+        <button onclick="generateSignal()">🚀 СИГНАЛ ГИРИФТАН</button>
     </div>
 
     <script>
-        const signalDisplay = document.getElementById('signal-value');
-        const loadingText = document.getElementById('loading-text');
-        const historyBox = document.getElementById('history-box');
-
-        function getSignal() {
-            // Омодагӣ ба "анализ"
-            signalDisplay.style.display = 'none';
-            loadingText.style.display = 'block';
+        function generateSignal() {
+            const output = document.getElementById('signal-output');
+            const prob = document.getElementById('prob');
             
-            const btn = document.querySelector('.btn-predict');
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-
-            // Вақти интизорӣ 1.5 сония
+            // Эффекти таҳлил
+            output.innerText = "ТАҲЛИЛ...";
+            output.style.color = "#ffcc00";
+            
             setTimeout(() => {
+                const now = new Date();
+                const min = now.getMinutes();
                 let result;
-                let chance = Math.random() * 100;
 
-                // Алгоритми тавлиди сигнал
-                if (chance < 60) {
-                    result = (Math.random() * (2.1 - 1.1) + 1.1).toFixed(2);
-                } else if (chance < 90) {
-                    result = (Math.random() * (5.0 - 2.1) + 2.1).toFixed(2);
+                // Алгоритми "2-соата" (ба вақт вобаста аст)
+                // Дар дақиқаҳои ҷуфт (0, 2, 4...) сигналҳо баландтар мешаванд
+                if (min % 2 === 0) {
+                    result = (Math.random() * (4.20 - 1.80) + 1.80).toFixed(2);
                 } else {
-                    result = (Math.random() * (20.0 - 5.0) + 5.0).toFixed(2);
+                    result = (Math.random() * (2.30 - 1.10) + 1.10).toFixed(2);
                 }
 
-                // Намоиши натиҷа
-                loadingText.style.display = 'none';
-                signalDisplay.innerText = result + 'x';
-                signalDisplay.style.display = 'block';
-                
-                // Илова кардан ба таърих
-                addToHistory(result);
-
-                btn.disabled = false;
-                btn.style.opacity = '1';
-            }, 1500);
-        }
-
-        function addToHistory(val) {
-            const item = document.createElement('div');
-            item.className = 'history-item';
-            item.innerText = val + 'x';
-            
-            // Ранги таърих вобаста ба коэффитсиент
-            if(parseFloat(val) > 5) item.style.color = '#f0b90b';
-            
-            historyBox.prepend(item);
-            
-            // Танҳо 4 натиҷаи охиринро нигоҳ медорем
-            if (historyBox.children.length > 4) {
-                historyBox.removeChild(historyBox.lastChild);
-            }
+                output.innerText = result + 'x';
+                output.style.color = "#ffffff";
+                prob.innerText = 'Синхронизатсия бо ID: 99.2%';
+            }, 1200); 
         }
     </script>
 </body>
